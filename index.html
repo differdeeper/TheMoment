@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="theme-color" content="#f6f8fb" />
-<title>🏢 디퍼앤디퍼 합동 비서실</title>
-<meta name="description" content="디퍼앤디퍼 · 더모멘트 팀 비서실 현황판. 대표님실, 3인 피클 데스크, 직원 라운지, 회의실 작업 보드를 한 화면에서." />
+<meta name="theme-color" content="#f2f4f8" />
+<title>TheMoment Office · 디퍼앤디퍼 합동 비서실</title>
+<meta name="description" content="디퍼앤디퍼 · 더모멘트 팀 비서실 현황판. 3D 아이소메트릭 오피스에서 대표님실·비서 데스크·회의실·라운지를 한눈에. 20초마다 자동 갱신." />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="DIFFER &amp; DEEPER" />
-<meta property="og:title" content="🏢 디퍼앤디퍼 합동 비서실" />
-<meta property="og:description" content="대표님실 · 3인 피클 데스크 · 직원 라운지 · 회의실 작업 보드를 한 화면에서. 20초마다 자동 갱신." />
+<meta property="og:title" content="TheMoment Office · 디퍼앤디퍼 합동 비서실" />
+<meta property="og:description" content="3D 아이소메트릭 오피스 맵 · 회의실 · 작업실 · 현황 · 메모. 20초마다 자동 갱신." />
 <meta name="twitter:card" content="summary" />
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8F%A2%3C/text%3E%3C/svg%3E" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='26' fill='%23101828'/%3E%3Ctext x='50' y='50' text-anchor='middle' dominant-baseline='central' font-family='Helvetica,Arial' font-size='52' font-weight='700' fill='%23ffffff'%3ED%3C/text%3E%3C/svg%3E" />
 <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -19,12 +19,12 @@
 <!-- PIN 잠금 (status.json 의 meta.pin 에 값이 있을 때만 뜹니다) -->
 <div class="gate" id="gate" hidden>
   <form class="gate-card" id="gateForm">
-    <div class="gate-emoji" aria-hidden="true">🔒</div>
-    <h2>합동 비서실</h2>
+    <div class="gate-mark" aria-hidden="true">D.</div>
+    <h2>TheMoment Office</h2>
     <p>팀 PIN을 입력해 주세요.</p>
     <input id="gateInput" class="gate-input" type="password" inputmode="numeric" autocomplete="off"
            placeholder="••••" aria-label="팀 PIN" />
-    <button class="btn btn--primary" type="submit">입장</button>
+    <button class="btn btn--dark" type="submit">입장</button>
     <p class="gate-error" id="gateError" hidden>PIN이 맞지 않습니다.</p>
     <p class="gate-note">화면 잠금용 간단 PIN입니다.</p>
   </form>
@@ -34,109 +34,187 @@
 
   <header class="topbar">
     <div class="brand">
-      <span class="brand-mark" aria-hidden="true">🏢</span>
+      <span class="brand-mark" aria-hidden="true">D.</span>
       <div class="brand-text">
-        <h1>디퍼앤디퍼 합동 비서실</h1>
-        <p class="brand-sub">DIFFER &amp; DEEPER · THE MOMENT OFFICE</p>
+        <h1>TheMoment Office</h1>
+        <p class="brand-sub">디퍼앤디퍼 합동 비서실 · <span id="partsLabel">—</span></p>
       </div>
     </div>
 
     <div class="topbar-right">
-      <div class="live" id="live">
+      <div class="live" id="live" title="20초마다 자동 갱신">
         <span class="live-dot" aria-hidden="true"></span>
-        <span id="connState">연결 중</span>
+        <span id="connState">LIVE</span>
       </div>
-      <div class="clock">
-        <span class="clock-time" id="clockTime">--:--</span>
-        <span class="clock-date" id="clockDate">—</span>
-      </div>
-      <button class="btn btn--ghost" id="refreshBtn" type="button" title="지금 새로고침">
-        <span aria-hidden="true">↻</span> 새로고침
+      <button class="icon-btn" id="refreshBtn" type="button" aria-label="지금 새로고침" title="지금 새로고침">
+        <span aria-hidden="true">↻</span>
       </button>
     </div>
   </header>
 
-  <div class="subbar">
-    <p class="updated">최근 업데이트 <b id="updatedLabel">—</b></p>
-    <p class="subbar-note" id="publicNote">팀 공개 모드</p>
-  </div>
+  <nav class="tabs" role="tablist" aria-label="화면 전환">
+    <button class="tab is-active" id="tab-office" role="tab" type="button" data-tab="office"
+            aria-selected="true" aria-controls="panel-office">오피스</button>
+    <button class="tab" id="tab-meeting" role="tab" type="button" data-tab="meeting"
+            aria-selected="false" aria-controls="panel-meeting" tabindex="-1">회의실</button>
+    <button class="tab" id="tab-work" role="tab" type="button" data-tab="work"
+            aria-selected="false" aria-controls="panel-work" tabindex="-1">작업실</button>
+    <button class="tab" id="tab-status" role="tab" type="button" data-tab="status"
+            aria-selected="false" aria-controls="panel-status" tabindex="-1">현황</button>
+    <button class="tab" id="tab-memo" role="tab" type="button" data-tab="memo"
+            aria-selected="false" aria-controls="panel-memo" tabindex="-1">메모</button>
+  </nav>
 
-  <main class="layout">
+  <main class="stage">
 
-    <section class="floor" aria-label="오피스 맵">
+    <!-- ============ 오피스 ============ -->
+    <section class="panel" id="panel-office" role="tabpanel" aria-labelledby="tab-office">
 
-      <!-- 👔 대표님실 -->
-      <article class="room room--owner" id="roomOwner" tabindex="0" role="button"
-               aria-label="대표님실 상세 보기">
-        <div class="room-tag">👔 대표님실</div>
-        <div class="owner-head">
-          <div class="owner-ava" aria-hidden="true">👔</div>
-          <div>
-            <p class="owner-name" id="ownerName">—</p>
-            <p class="owner-role" id="ownerRole">—</p>
-          </div>
-          <span class="badge" id="ownerBadge">—</span>
+      <div class="meta-line">
+        <span>최근 업데이트 <b id="updatedLabel">—</b></span>
+        <span class="meta-clock" id="clockTime">--:--</span>
+      </div>
+
+      <div class="card hero">
+        <span class="eyebrow">Workspace</span>
+        <h2 class="hero-title" id="heroTitle">대표님, <b>—</b>개 파트가 가동 중이에요</h2>
+        <p class="hero-sub">공간이나 담당자를 탭하면 최근 진행 현황을 바로 볼 수 있어요.</p>
+      </div>
+
+      <div class="chips">
+        <button class="chip chip--toggle is-on" id="motionBtn" type="button"
+                aria-pressed="true" title="핀 모션 켜기 / 끄기">모션 <b id="motionState">ON</b></button>
+        <span class="chip" id="chipParts">가동 —파트</span>
+        <span class="chip chip--live" id="chipSource">실시간 · Firebase</span>
+      </div>
+
+      <div class="mapcard">
+        <div class="map" id="map">
+          <picture>
+            <source srcset="office-3d.jpg" type="image/jpeg" />
+            <img class="map-img" src="office-3d.png"
+                 alt="디퍼앤디퍼 합동 비서실 3D 오피스 — 회의실, 지휘실, 데스크 6석, 라운지" />
+          </picture>
+          <div class="pins" id="pins"></div>
         </div>
+      </div>
 
-        <div class="goal">
-          <p class="goal-label">🎯 오늘의 톱골</p>
-          <p class="goal-title" id="goalTitle">—</p>
-          <div class="goal-bar"><span id="goalBar"></span></div>
-          <p class="goal-step" id="goalStep">—</p>
+      <section class="card">
+        <div class="card-head">
+          <h3 class="card-title">실시간 활동</h3>
+          <button class="link" type="button" data-goto="status">전체 보기 →</button>
         </div>
-
-        <div class="memo" id="ownerMemo">
-          <span class="memo-pin" aria-hidden="true">📌</span>
-          <p class="memo-title">오늘의 메모</p>
-          <p class="memo-text">—</p>
-        </div>
-
-        <p class="room-hint">눌러서 상세 보기</p>
-      </article>
-
-      <!-- 🤖 비서 데스크존 -->
-      <section class="room room--desks" aria-label="비서 데스크존">
-        <div class="room-tag">🤖 비서 데스크존 <span class="room-tag-sub">3인 피클</span></div>
-        <div class="desks" id="desks"></div>
+        <ol class="feed feed--preview" id="feedPreview"></ol>
       </section>
-
-      <!-- 👥 직원 협업 라운지 -->
-      <section class="room room--lounge" aria-label="직원 협업 라운지">
-        <div class="room-tag">👥 직원 협업 라운지 <span class="room-tag-sub">5석</span></div>
-        <ul class="seats" id="seats"></ul>
-        <p class="room-hint room-hint--static">좌석 상태는 팀 텔레그램에 공유된 협업 정보만 표시합니다.</p>
-      </section>
-
-      <!-- 💬 회의실 -->
-      <article class="room room--meeting" id="roomMeeting" tabindex="0" role="button"
-               aria-label="회의실 상세 보기">
-        <div class="room-tag">💬 회의실 · 실시간 작업 보드</div>
-        <div class="milestones" id="milestones"></div>
-        <div class="board" id="board"></div>
-        <p class="room-hint">눌러서 상세 보기</p>
-      </article>
 
     </section>
 
-    <aside class="side">
-      <section class="panel">
-        <h2 class="panel-title">📊 오늘의 숫자</h2>
-        <div class="stats" id="stats"></div>
-      </section>
+    <!-- ============ 회의실 ============ -->
+    <section class="panel" id="panel-meeting" role="tabpanel" aria-labelledby="tab-meeting" hidden>
 
-      <section class="panel panel--feed">
-        <h2 class="panel-title">💬 실시간 활동
-          <span class="panel-sub" id="feedCount"></span>
-        </h2>
-        <ol class="feed" id="feed"></ol>
-      </section>
-    </aside>
+      <div class="card">
+        <div class="card-head">
+          <h3 class="card-title">오늘의 정기 회차</h3>
+          <span class="pill" id="msCount">—</span>
+        </div>
+        <div class="timeline" id="meetingTimeline"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h3 class="card-title">실시간 작업 보드</h3>
+          <span class="pill" id="boardCount">—</span>
+        </div>
+        <div class="board" id="board"></div>
+      </div>
+
+    </section>
+
+    <!-- ============ 작업실 ============ -->
+    <section class="panel" id="panel-work" role="tabpanel" aria-labelledby="tab-work" hidden>
+
+      <div class="card">
+        <div class="card-head">
+          <h3 class="card-title">비서 · 팀원 데스크</h3>
+          <span class="pill" id="deskCount">—</span>
+        </div>
+        <div class="desk-grid" id="desksGrid"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h3 class="card-title">직원 협업 라운지</h3>
+          <span class="pill" id="teamCount">—</span>
+        </div>
+        <ul class="seats" id="teamList"></ul>
+        <p class="card-note">좌석 상태는 팀 텔레그램에 공유된 협업 정보만 표시합니다.</p>
+      </div>
+
+    </section>
+
+    <!-- ============ 현황 ============ -->
+    <section class="panel" id="panel-status" role="tabpanel" aria-labelledby="tab-status" hidden>
+
+      <div class="card">
+        <div class="card-head">
+          <h3 class="card-title">오늘의 숫자</h3>
+          <span class="pill">Stats</span>
+        </div>
+        <div class="stats" id="statsGrid"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h3 class="card-title">주요 마일스톤</h3>
+          <span class="pill" id="msMiniCount">—</span>
+        </div>
+        <div class="timeline timeline--compact" id="msMini"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h3 class="card-title">실시간 활동</h3>
+          <span class="pill" id="feedFullCount">—</span>
+        </div>
+        <ol class="feed feed--full" id="feedFull"></ol>
+      </div>
+
+    </section>
+
+    <!-- ============ 메모 ============ -->
+    <section class="panel" id="panel-memo" role="tabpanel" aria-labelledby="tab-memo" hidden>
+
+      <div class="card memo-card" id="memoCard">
+        <span class="eyebrow eyebrow--sun">📌 오늘의 메모</span>
+        <p class="memo-text" id="memoText">—</p>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h3 class="card-title">오늘의 톱골</h3>
+          <span class="pill" id="goalPeriod">—</span>
+        </div>
+        <p class="goal-title" id="goalTitle">—</p>
+        <div class="goal-bar"><span id="goalBar"></span></div>
+        <p class="goal-step" id="goalStep">—</p>
+        <ol class="goal-steps" id="goalSteps"></ol>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h3 class="card-title">대표님 지시 타임라인</h3>
+          <span class="pill" id="ownerUpdCount">—</span>
+        </div>
+        <div class="timeline" id="ownerUpdates"></div>
+      </div>
+
+    </section>
 
   </main>
 
   <footer class="foot">
     <p><b>디퍼앤디퍼 합동 비서실</b> · 주식회사 더모멘트</p>
-    <p class="foot-note">업데이트 방법 — 피클이 실시간 DB(<code>desks/&lt;id&gt;</code>)에 기록하면 20초 안에 자동 반영됩니다.</p>
+    <p class="foot-note" id="publicNote">팀 공개 모드 · 매출·정산·원가·개인정보는 담지 않습니다.</p>
   </footer>
 </div>
 
