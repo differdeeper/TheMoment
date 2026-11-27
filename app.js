@@ -576,6 +576,10 @@
             '</div>' +
           '</div>' +
           '<div class="bubble">' + esc(a.task) + '</div>' +
+          ((a.now || []).length ?
+            '<ul class="desk-now">' + a.now.slice(0, 3).map(function (n) {
+              return '<li>' + esc(n) + '</li>';
+            }).join('') + '</ul>' : '') +
           '<div class="desk-foot">' +
             '<span class="badge" data-s="' + esc(a.status) + '">' + esc(a.statusLabel) + '</span>' +
             '<span class="ago">' + esc(a.lastUpdated) + ' 기준</span>' +
