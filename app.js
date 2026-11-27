@@ -714,6 +714,7 @@
     { id: 'director1',  x: 35.2, y: 52.0, label: '1번 디렉터', short: '1번' },
     { id: 'b2b',        x: 50.4, y: 49.3, label: 'B2B · IR',  short: 'B2B' },
     { id: 'iyuna',      x: 61.2, y: 46.2, label: '이유나',    short: '유나' },
+    { id: 'anhyunju',   x: 71.5, y: 42.5, label: '안현주 · CEO', short: '안현주' },
     { id: 'pureun',     x: 36.5, y: 70.3, label: '푸른성벽',  short: '푸른' },
     { id: 'chominkyung', x: 49.9, y: 67.4, label: '조민경',   short: '민경', alias: ['jominkyung'] },
     { id: 'kimsumin',   x: 61.0, y: 64.4, label: '김수민',    short: '수민' }
