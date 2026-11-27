@@ -422,7 +422,10 @@
     blue:  { c1: '#9cc0ff', c2: '#3f7cff' },
     peach: { c1: '#ffc7ad', c2: '#ff8f68' },
     lilac: { c1: '#c9beff', c2: '#8f7bff' },
-    mint:  { c1: '#9ce6d4', c2: '#1fbf9c' }
+    mint:  { c1: '#9ce6d4', c2: '#1fbf9c' },
+    cyan:  { c1: '#8cecff', c2: '#06b6d4' },
+    amber: { c1: '#ffe08a', c2: '#f59e0b' },
+    pink:  { c1: '#ffc2d9', c2: '#ec4899' }
   };
 
   var SEAT_TONES = [

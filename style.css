@@ -894,6 +894,9 @@ button { font-family: inherit; }
 .feed-who[data-tone="peach"] { background: var(--peach-soft); color: #c15a2f; }
 .feed-who[data-tone="lilac"] { background: var(--lilac-soft); color: #5b48cf; }
 .feed-who[data-tone="mint"] { background: var(--mint-soft); color: #10836d; }
+.feed-who[data-tone="cyan"] { background: #e0f9ff; color: #0284c7; }
+.feed-who[data-tone="amber"] { background: #fef3c7; color: #b45309; }
+.feed-who[data-tone="pink"] { background: #fce7f3; color: #be185d; }
 
 .feed-tag { font-size: 9.5px; font-weight: 700; color: #a6b4c4; }
 
