@@ -474,8 +474,8 @@ body:not(.motion-off) .pin[data-state="meeting"] .pin-dot {
   100% { box-shadow: 0 0 0 0 rgba(179, 155, 251, 0); }
 }
 
-/* desk.motion === "spin" — 핀 아이콘 회전 */
-.pin[data-motion="spin"] .pin-dot { animation: spin360 2.8s linear infinite; }
+/* desk.motion === "spin" — 핀 아이콘 회전 (상태 점 펄스보다 우선) */
+body:not(.motion-off) .pin[data-motion="spin"] .pin-dot { animation: spin360 2.8s linear infinite; }
 
 body.motion-off .pin[data-motion="spin"] .pin-dot,
 body.motion-off .pin .pin-dot { animation: none; }
