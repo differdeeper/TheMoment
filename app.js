@@ -711,12 +711,12 @@
   /* 3D 오피스 이미지 위 좌표(%) — 이미지 기준으로 눈으로 맞춘 값입니다.
      좌표는 핀의 중심점이며 CSS 에서 translate(-50%, -50%) 로 놓입니다. */
   var MAP_SLOTS = [
-    { id: 'director1',  x: 35.4, y: 50.4, short: '1번' },
-    { id: 'b2b',        x: 48.9, y: 47.0, short: 'B2B' },
-    { id: 'iyuna',      x: 60.7, y: 44.3, short: '유나' },
-    { id: 'pureun',     x: 36.0, y: 68.4, short: '푸른' },
-    { id: 'chominkyung', x: 49.4, y: 65.0, short: '민경', alias: ['jominkyung'] },
-    { id: 'kimsumin',   x: 60.9, y: 62.3, short: '수민' }
+    { id: 'director1',  x: 35.2, y: 52.0, short: '1번' },
+    { id: 'b2b',        x: 50.8, y: 49.3, short: 'B2B' },
+    { id: 'iyuna',      x: 60.6, y: 46.2, short: '유나' },
+    { id: 'pureun',     x: 36.5, y: 70.3, short: '푸른' },
+    { id: 'chominkyung', x: 50.0, y: 67.4, short: '민경', alias: ['jominkyung'] },
+    { id: 'kimsumin',   x: 60.6, y: 64.4, short: '수민' }
   ];
 
   /* 자리가 정해지지 않은 추가 데스크(합류석) 좌표 */
@@ -998,7 +998,14 @@
       indexedItems.sort(function (a, b) { return a.idx - b.idx; });
       indexedItems.forEach(function (x) { items.push(x.item); });
     }
+    // 최신 시간이 위로 — HH:MM 기준(시간 표기가 없는 항목은 뒤로)
+    items.sort(function (a, b) { return timeValue(b.time) - timeValue(a.time); });
     return items;
+  }
+
+  function timeValue(t) {
+    var m = /^(\d{1,2}):(\d{2})$/.exec(String(t === null || t === undefined ? '' : t).trim());
+    return m ? Number(m[1]) * 60 + Number(m[2]) : -1;
   }
 
   function feedItemHtml(f) {
@@ -1082,11 +1089,16 @@
   }
 
   /* ---------------- 작업실 ---------------- */
-  function critterHtml(toneName, state, motion) {
+  function critterHtml(toneName, state, motion, avatar) {
     var c = tone(toneName);
     var zzz = state === 'idle' ? '<span class="zzz">z z</span>' : '';
+    var av = avatarUrl(avatar);
+    if (av) {
+      return '<img class="bot-avatar" src="' + esc(av) + '" alt="" loading="lazy"' +
+        (motion === 'spin' ? ' data-motion="spin"' : '') + ' />';
+    }
     return '' +
-      '<div class="critter" data-tone="' + esc(toneName) + '" data-status="' + esc(state) + '"' +
+      '<div class="critter bot" data-tone="' + esc(toneName) + '" data-status="' + esc(state) + '"' +
       (motion === 'spin' ? ' data-motion="spin"' : '') +
       ' style="--c1:' + c.c1 + ';--c2:' + c.c2 + '" aria-hidden="true">' +
         '<span class="c-shadow"></span>' +
@@ -1096,6 +1108,14 @@
         '<span class="c-face"><span class="c-eye"></span><span class="c-eye"></span><span class="c-mouth"></span></span>' +
         zzz +
       '</div>';
+  }
+
+  /* desk.avatar 가 있으면 CSS 캐릭터 대신 이미지로 표시합니다. (http(s)·data:image 만 허용) */
+  function avatarUrl(value) {
+    var v = String(value === null || value === undefined ? '' : value).trim();
+    if (!v) return '';
+    if (/^(https?:)?\/\//i.test(v) || /^data:image\//i.test(v)) return v;
+    return '';
   }
 
   function renderDesks(list) {
@@ -1109,7 +1129,7 @@
         ' data-status="' + esc(a.status) + '" style="--tone:' + c.c2 + '"' +
         ' aria-label="' + esc(a.name) + ' 상세 보기">' +
           '<div class="desk-top">' +
-            critterHtml(a.tone, a.status, a.motion) +
+            critterHtml(a.tone, a.status, a.motion, a.avatar) +
             '<div class="desk-id">' +
               '<p class="desk-name">' + esc(a.name) + '</p>' +
               '<span class="desk-handle">' + esc(a.handle || '') + '</span>' +
@@ -1331,7 +1351,7 @@
     }).join('');
 
     return drawerShell(a.name, (a.handle ? a.handle + ' · ' : '') + (a.statusLabel || '대기'),
-        critterHtml(a.tone, a.status, a.motion)) +
+        critterHtml(a.tone, a.status, a.motion, a.avatar)) +
       '<div class="dr-section"><p class="dr-label">지금 하는 일</p>' +
         '<div class="dr-card">' + esc(a.task || '—') + '</div></div>' +
       (now ? '<div class="dr-section"><p class="dr-label">진행 상황</p><ul class="dr-list">' + now + '</ul></div>' : '') +

@@ -1072,15 +1072,31 @@ body.motion-off .pin .pin-dot { animation: none; }
 
 /* desk.motion === "spin" — 빙글빙글 */
 .critter[data-motion="spin"],
-.bot[data-motion="spin"] {
+.bot[data-motion="spin"],
+.bot-avatar[data-motion="spin"] {
   animation: spin360 3.4s linear infinite;
   transform-origin: 50% 60%;
 }
 
 body.motion-off .critter[data-motion="spin"],
-body.motion-off .bot[data-motion="spin"] {
+body.motion-off .bot[data-motion="spin"],
+body.motion-off .bot-avatar[data-motion="spin"] {
   animation: none;
 }
+
+/* desk.avatar — 기본 캐릭터 대신 프로필 이미지 */
+.bot-avatar {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border-radius: 14px;
+  object-fit: cover;
+  background: #eef2f7;
+  box-shadow: 0 2px 6px rgba(16, 24, 40, .1);
+}
+
+.dr-head .critter { width: 54px; height: 54px; }
+.dr-head .bot-avatar { width: 54px; height: 54px; border-radius: 17px; }
 
 @keyframes spin360 { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 

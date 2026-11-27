@@ -32,6 +32,16 @@
 
 데스크 JSON에 `"motion": "spin"` 을 넣으면 그 데스크의 캐릭터(작업실 카드 · 드로어)와 오피스 핀 아이콘이 360도로 빙글빙글 돕니다. `모션 OFF` 상태에서는 회전하지 않습니다.
 
+### `avatar` (커스텀 캐릭터 이미지)
+
+데스크 JSON에 `"avatar": "https://…/me.png"` 를 넣으면 작업실 카드·드로어에서 기본 곰돌이 대신 그 이미지(`.bot-avatar`)가 표시됩니다. 값이 없으면 기존 CSS 캐릭터(`.critter.bot`)가 그대로 나옵니다. `http(s)` 와 `data:image` 주소만 반영합니다.
+
+```bash
+curl -X PATCH -H "Content-Type: application/json" \
+  -d '{"avatar":"https://example.com/ahnhyeonju.png"}' \
+  "$RTDB/desks/anhyunju.json"
+```
+
 ```bash
 curl -X PATCH -H "Content-Type: application/json" \
   -d '{"motion":"spin"}' \
