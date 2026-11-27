@@ -1277,6 +1277,10 @@ body.motion-off .bot-avatar[data-motion="spin"] {
 .gate-note { margin-top: 14px !important; font-size: 10.5px !important; color: #b3c0cf !important; }
 
 /* ---------------- 반응형 ---------------- */
+@media (min-width: 1100px) {
+  .topbar, .tabs, .stage, .foot { max-width: 1040px; }
+}
+
 @media (max-width: 720px) {
   .topbar { padding: 16px 14px 12px; }
   .brand-mark { width: 46px; height: 46px; border-radius: 14px; font-size: 17px; }
