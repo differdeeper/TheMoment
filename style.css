@@ -1284,7 +1284,13 @@ body.motion-off .bot-avatar[data-motion="spin"] {
 @media (max-width: 720px) {
   .topbar { padding: 16px 14px 12px; }
   .brand-mark { width: 46px; height: 46px; border-radius: 14px; font-size: 17px; }
-  .brand-sub { font-size: 11px; }
+  .brand-sub {
+    font-size: 11px;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    line-height: 1.35;
+  }
   .live { height: 30px; padding: 0 11px; font-size: 11px; }
   .icon-btn { width: 30px; height: 30px; font-size: 14px; }
 
@@ -1326,7 +1332,7 @@ body.motion-off .bot-avatar[data-motion="spin"] {
 
 @media (max-width: 480px) {
   .brand h1 { font-size: 18px; }
-  .brand-sub { max-width: 62vw; }
+  .brand-sub { max-width: 100%; }
   .tab { font-size: 12px; padding: 9px 1px; }
   .card { padding: 15px; }
   .card-title { font-size: 13.5px; }
