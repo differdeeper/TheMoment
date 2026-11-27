@@ -97,6 +97,7 @@ button { font-family: inherit; }
   font-weight: 800;
   letter-spacing: -.02em;
   line-height: 1.25;
+  word-break: keep-all;
 }
 
 .brand-sub {
@@ -230,6 +231,7 @@ button { font-family: inherit; }
 .room {
   position: relative;
   background:
+    linear-gradient(180deg, var(--room-tint, transparent), transparent 170px),
     linear-gradient(to right, rgba(230, 238, 248, .5) 1px, transparent 1px) 0 0 / 26px 26px,
     linear-gradient(to bottom, rgba(230, 238, 248, .5) 1px, transparent 1px) 0 0 / 26px 26px,
     var(--card);
@@ -240,6 +242,11 @@ button { font-family: inherit; }
   overflow: hidden;
   transition: transform .2s ease, box-shadow .25s ease, border-color .2s ease;
 }
+
+.room--owner   { --room-tint: rgba(255, 214, 140, .26); }
+.room--desks   { --room-tint: rgba(150, 190, 255, .22); }
+.room--lounge  { --room-tint: rgba(140, 226, 205, .22); }
+.room--meeting { --room-tint: rgba(196, 184, 255, .22); }
 
 .room[role="button"] { cursor: pointer; }
 .room[role="button"]:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: #d8e5f6; }
@@ -346,6 +353,7 @@ button { font-family: inherit; }
   letter-spacing: -.02em;
   line-height: 1.35;
   color: #17233a;
+  word-break: keep-all;
 }
 
 .goal-bar {

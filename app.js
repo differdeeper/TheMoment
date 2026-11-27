@@ -449,7 +449,8 @@
 
   /* ---------------- 시계 (한국 시간 고정) ---------------- */
   function seoulParts() {
-    var d = new Date(Date.now() + (new Date().getTimezoneOffset() + 540) * 60000);
+    // UTC epoch 에 9시간을 더한 뒤 UTC 필드로 읽으면 항상 한국 시간
+    var d = new Date(Date.now() + 9 * 3600 * 1000);
     return {
       h: d.getUTCHours(),
       m: d.getUTCMinutes(),
