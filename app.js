@@ -711,12 +711,12 @@
   /* 3D 오피스 이미지 위 좌표(%) — 이미지 기준으로 눈으로 맞춘 값입니다.
      좌표는 핀의 중심점이며 CSS 에서 translate(-50%, -50%) 로 놓입니다. */
   var MAP_SLOTS = [
-    { id: 'director1',  x: 35.2, y: 52.0, short: '1번' },
-    { id: 'b2b',        x: 50.8, y: 49.3, short: 'B2B' },
-    { id: 'iyuna',      x: 60.6, y: 46.2, short: '유나' },
-    { id: 'pureun',     x: 36.5, y: 70.3, short: '푸른' },
-    { id: 'chominkyung', x: 50.0, y: 67.4, short: '민경', alias: ['jominkyung'] },
-    { id: 'kimsumin',   x: 60.6, y: 64.4, short: '수민' }
+    { id: 'director1',  x: 35.2, y: 52.0, label: '1번 디렉터', short: '1번' },
+    { id: 'b2b',        x: 50.4, y: 49.3, label: 'B2B · IR',  short: 'B2B' },
+    { id: 'iyuna',      x: 61.2, y: 46.2, label: '이유나',    short: '유나' },
+    { id: 'pureun',     x: 36.5, y: 70.3, label: '푸른성벽',  short: '푸른' },
+    { id: 'chominkyung', x: 49.9, y: 67.4, label: '조민경',   short: '민경', alias: ['jominkyung'] },
+    { id: 'kimsumin',   x: 61.0, y: 64.4, label: '김수민',    short: '수민' }
   ];
 
   /* 자리가 정해지지 않은 추가 데스크(합류석) 좌표 */
@@ -950,7 +950,7 @@
       aliases.forEach(function (a) { used[a] = 1; });
       pins.push({
         id: d.id, x: slot.x, y: slot.y,
-        label: d.name || slot.id, short: slot.short,
+        label: slot.label || d.name || slot.id, short: slot.short,
         state: d.status || 'idle', motion: d.motion,
         aria: (d.name || slot.id) + ' 데스크 상세 보기',
         delay: (0.3 + i * 0.35).toFixed(2)

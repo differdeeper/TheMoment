@@ -1328,8 +1328,8 @@ body.motion-off .bot-avatar[data-motion="spin"] {
   .card-title { font-size: 13.5px; }
 
   /* 핀 겹침 방지 — 짧은 이름 + 최소 패딩 */
-  .pin { font-size: 8.5px; padding: 3px 6px; gap: 4px; border-radius: 999px; }
-  .pin-dot { width: 5px; height: 5px; }
+  .pin { font-size: 8px; padding: 2px 5px; gap: 3px; }
+  .pin-dot { width: 4px; height: 4px; }
   .pin-full { display: none; }
   .pin-short { display: inline; }
 
@@ -1349,7 +1349,8 @@ body.motion-off .bot-avatar[data-motion="spin"] {
 }
 
 @media (max-width: 360px) {
-  .pin { font-size: 8px; padding: 2.5px 5px; gap: 3px; }
+  .pin { font-size: 7.5px; padding: 2px 4px; gap: 2px; }
+  .pin-dot { width: 3.5px; height: 3.5px; }
   .brand-sub { display: none; }
 }
 
