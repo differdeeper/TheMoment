@@ -15,7 +15,7 @@
     "updatedLabel": "11월 27일 (금) 12:50",
     "pin": null,
     "publicNote": "팀 공개 모드 · 매출·정산·원가·개인정보는 담지 않습니다.",
-    "refreshSeconds": 30
+    "refreshSeconds": 20
   },
   "owner": {
     "id": "owner",
@@ -408,6 +408,16 @@
 
   var DEFAULT_REFRESH = 30;
 
+  /* ============================================================
+     실시간 데이터베이스 (Firebase Realtime Database · Spark 무료)
+     - 페이지는 이 주소의 /.json 을 20~30초마다 읽습니다.
+     - 각 피클은 <RTDB>/desks/<id>.json 에 PUT/PATCH 로 자기 상태를 씁니다.
+     - 통신이 안 되면 ./status.json 으로 자동 대체합니다.
+     ============================================================ */
+  var RTDB_URL = 'https://differdeeper-office-default-rtdb.asia-southeast1.firebasedatabase.app';
+  var RTDB_ENDPOINT = RTDB_URL + '/.json';
+  var LOCAL_STATUS = './status.json';
+
   var TONES = {
     blue:  { c1: '#9cc0ff', c2: '#3f7cff' },
     peach: { c1: '#ffc7ad', c2: '#ff8f68' },
@@ -767,7 +777,7 @@
       (scope ? '<div class="dr-section"><p class="dr-label">담당 범위</p><div class="dr-tags">' + scope + '</div></div>' : '') +
       updatesList(a.updates) +
       '<div class="dr-section"><p class="dr-label">업데이트</p>' +
-        '<div class="dr-card">' + esc(a.lastUpdated) + ' 기준 · 이 데스크의 상태는 담당 피클이 status.json에 직접 기록합니다.</div></div>';
+        '<div class="dr-card">' + esc(a.lastUpdated) + ' 기준 · 이 데스크의 상태는 담당 피클이 실시간 DB(desks/' + esc(a.id) + ')에 직접 기록합니다.</div></div>';
   }
 
   function openDrawer(id) {
@@ -797,26 +807,91 @@
   }
 
   /* ---------------- 데이터 로딩 ---------------- */
+  function fetchJSON(url, timeoutMs) {
+    var ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+    var timer = null;
+    var opts = { cache: 'no-store' };
+    if (ctrl) {
+      opts.signal = ctrl.signal;
+      timer = setTimeout(function () { ctrl.abort(); }, timeoutMs || 8000);
+    }
+    return fetch(url, opts).then(function (res) {
+      if (timer) clearTimeout(timer);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
+    }, function (err) {
+      if (timer) clearTimeout(timer);
+      throw err;
+    });
+  }
+
+  /* 실시간 DB 우선, 실패하면 같은 폴더의 status.json */
+  function fetchState() {
+    var stamp = Date.now();
+    return fetchJSON(RTDB_ENDPOINT + '?t=' + stamp, 8000)
+      .then(function (d) {
+        if (!d || typeof d !== 'object') throw new Error('empty');
+        return { data: d, source: 'rtdb' };
+      })
+      .catch(function () {
+        return fetchJSON(LOCAL_STATUS + '?t=' + stamp, 8000).then(function (d) {
+          if (!d || typeof d !== 'object') throw new Error('empty');
+          return { data: d, source: 'local' };
+        });
+      });
+  }
+
+  function toArray(value) {
+    if (!value) return [];
+    if (Array.isArray(value)) return value.filter(function (v) { return v !== null && v !== undefined; });
+    return Object.keys(value).map(function (k) { return value[k]; })
+      .filter(function (v) { return v !== null && v !== undefined; });
+  }
+
+  /* desks/<id> 는 assistants 보다 우선합니다 (피클이 직접 쓰는 자리) */
+  function normalize(state) {
+    if (!state) return state;
+    var list = toArray(state.assistants).slice();
+    toArray(state.desks).forEach(function (d) {
+      if (!d || !d.id) return;
+      var idx = -1;
+      for (var i = 0; i < list.length; i++) {
+        if (list[i] && list[i].id === d.id) { idx = i; break; }
+      }
+      if (idx >= 0) list[idx] = mergeDesk(list[idx], d);
+      else list.push(d);
+    });
+    state.assistants = list;
+    return state;
+  }
+
+  function mergeDesk(base, over) {
+    var out = {};
+    Object.keys(base || {}).forEach(function (k) { out[k] = base[k]; });
+    Object.keys(over || {}).forEach(function (k) {
+      var v = over[k];
+      if (v === null || v === undefined) return;
+      out[k] = v;
+    });
+    return out;
+  }
+
   function scheduleRefresh() {
     if (refreshTimer) clearInterval(refreshTimer);
     refreshTimer = setInterval(function () { load(false); }, refreshMs);
   }
 
   function load(manual) {
-    setConn('loading', '불러오는 중');
+    if (!status) setConn('loading', '불러오는 중');
     var btn = $('refreshBtn');
     if (manual && btn) btn.classList.add('is-spinning');
 
-    fetch('./status.json?t=' + Date.now(), { cache: 'no-store' })
+    fetchState()
       .then(function (res) {
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        return res.json();
-      })
-      .then(function (data) {
-        status = data;
+        status = normalize(res.data);
         lastLoaded = Date.now();
         render();
-        setConn('live', '실시간 연결');
+        setConn('live', res.source === 'rtdb' ? '실시간 · Firebase' : '실시간 연결');
       })
       .catch(function () {
         if (!status && FALLBACK_STATUS) {
@@ -826,7 +901,7 @@
         } else if (status) {
           setConn('offline', '연결 지연 · 이전 데이터');
         } else {
-          setConn('offline', 'status.json 없음');
+          setConn('offline', '데이터 없음');
         }
       })
       .then(function () {
@@ -888,10 +963,14 @@
     tickClock();
     setInterval(tickClock, 1000);
 
-    // 첫 데이터(잠금 여부 판단용) — 파일을 직접 열었으면 내장 스냅샷으로
-    fetch('./status.json?t=' + Date.now(), { cache: 'no-store' })
-      .then(function (r) { if (!r.ok) throw new Error('x'); return r.json(); })
-      .then(function (d) { status = d; lastLoaded = Date.now(); initGate(); })
+    // 첫 데이터(잠금 여부 판단용) — 실시간 DB → status.json → 내장 스냅샷 순서
+    fetchState()
+      .then(function (res) {
+        status = normalize(res.data);
+        lastLoaded = Date.now();
+        initGate();
+        if (res.source === 'local') setConn('live', '실시간 연결 · 파일');
+      })
       .catch(function () {
         status = FALLBACK_STATUS;
         initGate();
