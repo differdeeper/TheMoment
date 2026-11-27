@@ -665,9 +665,35 @@
     }).join('');
   }
 
-  function renderFeed(list) {
+  function normalizeActivities(raw) {
+    if (!raw) return [];
+    var items = [];
+    if (Array.isArray(raw)) {
+      items = raw.filter(Boolean);
+    } else if (typeof raw === 'object') {
+      var pushItems = [];
+      var indexedItems = [];
+      Object.keys(raw).forEach(function (k) {
+        var v = raw[k];
+        if (!v || typeof v !== 'object') return;
+        if (/^\d+$/.test(k)) {
+          indexedItems.push({ idx: Number(k), item: v });
+        } else {
+          pushItems.push({ key: k, item: v });
+        }
+      });
+      // 최신 push 항목(역순)을 위에, 기존 인덱스 항목을 아래에 배치
+      pushItems.reverse().forEach(function (p) { items.push(p.item); });
+      indexedItems.sort(function (a, b) { return a.idx - b.idx; });
+      indexedItems.forEach(function (x) { items.push(x.item); });
+    }
+    return items;
+  }
+
+  function renderFeed(raw) {
     var box = $('feed');
     if (!box) return;
+    var list = normalizeActivities(raw);
 
     box.innerHTML = list.map(function (f) {
       return '' +
