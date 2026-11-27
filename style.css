@@ -39,6 +39,9 @@
 
 * { box-sizing: border-box; }
 
+/* hidden 속성이 항상 이기도록 (display 를 지정한 요소 포함) */
+[hidden] { display: none !important; }
+
 html, body { margin: 0; padding: 0; }
 
 body {
